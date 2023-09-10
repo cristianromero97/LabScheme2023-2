@@ -62,6 +62,8 @@
 ;Para crear mas opciones se debe seguir el siguiente planteamiento
 (define op1 (op 1 2 4 "viajar"))
 (define op2 (op 2 4 3 "estudiar"))
+(define op3 (op 2 4 2 "estudiar"))
+(define op4 (op 4 2 3 "pedir"))
 
 ; Ejemplo de uso
 (define opciones '()) ; Inicializamos la lista de opciones
@@ -74,14 +76,22 @@
 
 ;(display (consultar-opciones opciones)) ; Muestra todas las opciones almacenadas
 
+
+;DOM : name (string) x option(list)
+;REC : flow
+;Recursion : Ninguna
+;Resumen : A un flujo determinado le va asignando opciones.
+(define (flow tipo . opciones)
+  (cons tipo opciones))
+
 ;lista aqui ir colocando todas las opciones
-(define opciones-disponibles (list op1 op2))
+(define opciones-disponibles (list op1 op2 op3 op4))
 
 ;DOM : name (string) x option(list)
 ;REC : flow
 ;Recursion : Natural
-;Resumen : A un flujo determinado le va asignando opciones.
-(define (flow tipo cantidad)
+;Resumen : A un flujo determinado le va asignando opciones (otra forma de ver la funcion flow).
+(define (flow-aux tipo cantidad)
   (define (seleccionar-opciones cantidad opciones)
     (if (= cantidad 0)
         '()
@@ -100,3 +110,67 @@
      clave
   #f)
 )
+
+;Ejemplo de uso funcion flow
+(define f09(flow "flujo1" op1 op2))
+
+
+;DOM : flow x option
+;REC : flow
+;Recursion : Ninguna
+;Resumen : Añade a un flow existente una opcion y lo mete a una nueva lista o flujo (una forma de verla es esta).
+(define (flow-add-option-1 lista option)
+  (if (member option lista)
+    (list option)       
+      '()))
+
+
+;DOM : flow x option
+;REC : flow
+;Recursion : Ninguna
+;Resumen : Añade a un flow existente una opcion y lo mete a una nueva lista o flujo (esta forma es la que la usare).
+(define (flow-add-option-2 flow option)
+  (if (and (list? flow) (list? option))
+      (if (member option (cdr flow))
+          flow
+          (cons (car flow) (cons option (cdr flow))))
+      '()))
+
+;Ejemplos de uso
+(define f10 (flow "flujo1" op1))
+(define f11(flow-add-option-2 f10 op1))
+(define f12(flow-add-option-2 f11 op2))
+
+;DOM : name (string) x mensaje (string) x flows
+;REC : chatbot
+;Recursion : Ninguna
+;Resumen : Crea un chatbot o bot inicial con ciertos parametros, basandonos en la estructura de listas, se debe asignar un nombre
+; un mensaje de bienvenida y la opcion que se va a realizar (ver ejemplo).
+(define (chatbot name mensaje L)
+  (if (and (string? name)(string? mensaje)(list? L))
+     (list
+      (cons name (cons mensaje (cons L '())))
+      
+     )null))
+;Ejemplo de uso
+(define cb10(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f12))
+
+
+;DOM : chatbot x flows
+;REC : chatbot
+;Recursion : Cola
+;Resumen : Añade lo obtenido en la funcion anterior (chatbot) a un nuevo bot con nuevas opciones. 
+(define (chatbot-add-flow flow option)
+  (define (add-option-cola flow option result)
+    (if (null? flow)
+        (reverse (cons option result))
+        (if (equal? (car flow) option)
+            (reverse (cons option result))
+            (add-option-cola (cdr flow) option (cons (car flow) result)))))
+  (if (and (list? flow) (list? option))
+      (if (member option flow)
+          flow
+          (add-option-cola flow option '()))
+      '()))
+;Ejemplo de uso
+(define cb11 (chatbot-add-flow cb10 f12))
