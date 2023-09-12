@@ -1,4 +1,7 @@
 #lang racket
+;Definicion de librerias de tiempo
+(require racket/date) ;libreria date para fechas
+(define fecha(current-date)) ;defino fecha como hora actual
 
 ;DOM : code (int) x message (string) x chatbotcodelink (int) x flowcodelink (int) x keyword
 ;REC : list
@@ -178,5 +181,12 @@
 ;DOM : name (string) x chatbot
 ;REC : system
 ;Recursion : Ninguna
-;Resumen : Funcion constructora de un sistema de chatbots. 
+;Resumen : Funcion constructora de un sistema de chatbots, deja la fecha como registro de cuando se crea. 
+(define (system sistema chatbots)
+  (if (and (string? sistema) (list? chatbots))
+     (list
+        (cons sistema (cons chatbots
+           (cons (date->string fecha) '() ))))
+      null))
 
+(define s0(system "newSystem" cb11))
