@@ -174,3 +174,9 @@
       '()))
 ;Ejemplo de uso
 (define cb11 (chatbot-add-flow cb10 f12))
+
+;DOM : name (string) x chatbot
+;REC : system
+;Recursion : Ninguna
+;Resumen : Funcion constructora de un sistema de chatbots. 
+
