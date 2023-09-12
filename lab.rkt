@@ -189,4 +189,20 @@
            (cons (date->string fecha) '() ))))
       null))
 
+;Ejemplo de uso
 (define s0(system "newSystem" cb11))
+
+;DOM : system x chatbot
+;REC : system
+;Recursion : Ninguna
+;Resumen : Función modificadora para añadir chatbots a un sistema. 
+(define (system-add-chatbot sistema chatbot)
+  (if (and (list? sistema) (list? chatbot))
+      (if (member chatbot sistema)
+          sistema
+          (reverse (cons chatbot (reverse sistema))))
+      '()))
+
+;Ejemplo de uso
+(define s1 (system-add-chatbot s0 cb11))
+
