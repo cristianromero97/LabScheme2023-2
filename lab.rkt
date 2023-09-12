@@ -62,33 +62,12 @@
       numero
       #f))
 
-;Para crear mas opciones se debe seguir el siguiente planteamiento
-(define op1 (op 1 2 4 "viajar"))
-(define op2 (op 2 4 3 "estudiar"))
-(define op3 (op 2 4 2 "estudiar"))
-(define op4 (op 4 2 3 "pedir"))
-
-; Ejemplo de uso
-(define opciones '()) ; Inicializamos la lista de opciones
-;(set! opciones (op 1 2 3 "viajar" opciones)) ; Agregamos la primera opción
-;(set! opciones (op 2 3 4 "estudiar" opciones)) ; Agregamos la segunda opción
-
-; Función para consultar opciones
-(define (consultar-opciones opciones)
-  opciones)
-
-;(display (consultar-opciones opciones)) ; Muestra todas las opciones almacenadas
-
-
 ;DOM : name (string) x option(list)
 ;REC : flow
 ;Recursion : Ninguna
 ;Resumen : A un flujo determinado le va asignando opciones.
 (define (flow tipo . opciones)
   (cons tipo opciones))
-
-;lista aqui ir colocando todas las opciones
-(define opciones-disponibles (list op1 op2 op3 op4))
 
 ;DOM : name (string) x option(list)
 ;REC : flow
@@ -114,10 +93,6 @@
   #f)
 )
 
-;Ejemplo de uso funcion flow
-(define f09(flow "flujo1" op1 op2))
-
-
 ;DOM : flow x option
 ;REC : flow
 ;Recursion : Ninguna
@@ -139,11 +114,6 @@
           (cons (car flow) (cons option (cdr flow))))
       '()))
 
-;Ejemplos de uso
-(define f10 (flow "flujo1" op1))
-(define f11(flow-add-option-2 f10 op1))
-(define f12(flow-add-option-2 f11 op2))
-
 ;DOM : name (string) x mensaje (string) x flows
 ;REC : chatbot
 ;Recursion : Ninguna
@@ -155,9 +125,6 @@
       (cons name (cons mensaje (cons L '())))
       
      )null))
-;Ejemplo de uso
-(define cb10(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f12))
-
 
 ;DOM : chatbot x flows
 ;REC : chatbot
@@ -175,8 +142,6 @@
           flow
           (add-option-cola flow option '()))
       '()))
-;Ejemplo de uso
-(define cb11 (chatbot-add-flow cb10 f12))
 
 ;DOM : name (string) x chatbot
 ;REC : system
@@ -189,9 +154,6 @@
            (cons (date->string fecha) '() ))))
       null))
 
-;Ejemplo de uso
-(define s0(system "newSystem" cb11))
-
 ;DOM : system x chatbot
 ;REC : system
 ;Recursion : Ninguna
@@ -203,6 +165,82 @@
           (reverse (cons chatbot (reverse sistema))))
       '()))
 
-;Ejemplo de uso
-(define s1 (system-add-chatbot s0 cb11))
+;Funciones extra
+;DOM : system x chatbot
+;REC : system
+;Recursion : Ninguna
+;Resumen : Funcion anexa que intenta ver duplicados. 
+(define (remover-duplicado sistema chatbot)
+  (if (and (list? sistema) (list? chatbot))
+      (let ((chatbot-name (car chatbot)))
+        (if (contains-chatbot sistema chatbot-name)
+            sistema
+            (cons chatbot sistema)))
+      '()))
+;DOM : system x chatbot
+;REC : system
+;Recursion : Ninguna
+;Resumen : Funcion anexa que verifica duplicados contenidos. 
+(define (contains-chatbot sistema chatbot-name)
+  (cond
+    ((null? sistema) #f)
+    ((equal? chatbot-name (car sistema)) #t)
+    (else (contains-chatbot (cdr sistema) chatbot-name))))
 
+;(define s98 (remover-duplicado (cdr s1) (car s1)))
+
+;DOM : system x chatbot
+;REC : system
+;Recursion : Ninguna
+;Resumen : Función que verifica en caso de no haber duplicados. 
+(define (system-add-chatbot-no-duplicado sistema chatbot)
+  (if (and (list? sistema) (list? chatbot))
+      (if (not (contains-chatbot sistema (car chatbot)))
+          (cons chatbot sistema)
+          sistema)
+      '()))
+
+;(define s99 (system-add-chatbot-no-duplicado s1 cb11))
+
+; EJEMPLO DE USO
+
+;Para crear mas opciones se debe seguir el siguiente planteamiento
+(define op1 (op 1 2 4 "viajar"))
+(define op2 (op 2 4 3 "estudiar"))
+(define op3 (op 2 4 2 "estudiar"))
+(define op4 (op 4 2 3 "pedir"))
+
+;Ejemplo anexos
+(define opciones '()) ; Inicializamos la lista de opciones
+;(set! opciones (op 1 2 3 "viajar" opciones)) ; Agregamos la primera opción
+;(set! opciones (op 2 3 4 "estudiar" opciones)) ; Agregamos la segunda opción
+
+; Función para consultar opciones
+(define (consultar-opciones opciones)
+  opciones)
+
+;(display (consultar-opciones opciones)) ; Muestra todas las opciones almacenadas
+
+;lista aqui ir colocando todas las opciones
+(define opciones-disponibles (list op1 op2 op3 op4))
+
+;Ejemplo de uso funcion flow
+(define f09(flow "flujo1" op1 op2)) ;primera forma de ver los flujos
+(define f099(flow-aux "flujo1" 2)) ;segunda forma de ver los flujos
+
+;Ejemplos de uso flow-add-option
+(define f10 (flow "flujo1" op1)) ;creacion de otro flujo
+(define f11(flow-add-option-2 f10 op1))
+(define f12(flow-add-option-2 f11 op2))
+
+;Ejemplo de uso chatbot
+(define cb10(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f12))
+
+;Ejemplo de uso chatbot-add-flow
+(define cb11 (chatbot-add-flow cb10 f12))
+
+;Ejemplo de uso system
+(define s0(system "newSystem" cb11))
+
+;Ejemplo de uso system-add-chatbot
+(define s1 (system-add-chatbot s0 cb11))
