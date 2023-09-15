@@ -202,6 +202,50 @@
 
 ;(define s99 (system-add-chatbot-no-duplicado s1 cb11))
 
+;DOM : system X user (string)
+;REC : system
+;Recursion : Ninguna
+;Resumen : . Función modificadora para añadir usuarios a un sistema.
+(define (system-add-user sistema usuario)
+  (if (string? usuario)
+      (if (not (member usuario (car sistema)))
+          (cons (cons usuario (car sistema)) (cdr sistema))
+          sistema)
+      '()))
+
+;DOM : system X user (string)
+;REC : system
+;Recursion : Ninguna
+;Resumen : Función que permite iniciar una sesión en el sistema.
+(define (system-login sistema usuario)
+  (if (and (string? usuario) (list? sistema))
+      (if (list-member (car sistema) usuario)
+          "Se ha ingresado a sesión correctamente."
+          "Error: Usuario no encontrado.")
+      "Error: Argumentos no válidos."))
+
+;DOM : lst x item
+;REC : list
+;Recursion : Ninguna
+;Resumen : Función que verifica en caso de haber duplicados. 
+(define (list-member lst item)
+  (cond
+    ((null? lst) #f)
+    ((equal? (car lst) item) #t)
+    (else (list-member (cdr lst) item))))
+
+;DOM : system
+;REC : system
+;Recursion : Ninguna
+;Resumen : Función que permite cerrar una sesión abierta.
+(define (system-logout sistema usuario)
+  (if (and (string? usuario) (list? sistema))
+      (if (list-member (car sistema) usuario)
+          "Se ha cerrado la sesion correctamente."
+          "Error: Usuario no esta dentro del sistema.")
+      "Error: Argumentos no válidos."))
+
+
 ; EJEMPLO DE USO
 
 ;Para crear mas opciones se debe seguir el siguiente planteamiento
@@ -244,3 +288,19 @@
 
 ;Ejemplo de uso system-add-chatbot
 (define s1 (system-add-chatbot s0 cb11))
+
+;Ejemplo de uso system-add-user
+(define s2 (system-add-user s1 "user1"))
+(define s3 (system-add-user s2 "user2"))
+(define s4 (system-add-user s3 "user2")) ;solo añade un ocurrencia de user2
+(define s5 (system-add-user s4 "user3"))
+
+;Ejemplo de uso system-login
+
+(define s44 (system-login s3 "user1")) ; Devolverá "Se ha ingresado a sesión correctamente." porque "user0" está en la lista de usuarios.
+(define s55 (system-login s3 "user9")) ; Devolverá "No se ha podido ingresar a sesión. El usuario no existe." porque "user9" no está en la lista de usuarios.
+(define s66 (system-login s3 42)) ; Devolverá "Error: Argumentos no válidos." porque el usuario no es una cadena.
+
+;Ejemplo de uso system-logout
+
+(define s444 (system-logout s3 "user1"))
