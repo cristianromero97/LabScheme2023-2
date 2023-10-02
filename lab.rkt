@@ -40,7 +40,10 @@
     ((= numero 14) "5 en realidad quiero otro destino")
     ((= numero 15) "4 agregar mas atractivos")
     ((= numero 16) "4 cambiar destino")
-    ((= numero 17) "1 central park")
+    ((= numero 17) "1 carrera tecnica")
+    ((= numero 18) "2 postgrado")
+    ((= numero 19) "3 volver")
+    ((= numero 20) "1 central park")
     (else '())))
 
 ;DOM : keyword (string)
@@ -66,6 +69,9 @@
     ((string=? keyword "en realidad quiero otro destino")'("cambiar destino"))
     ((string=? keyword "agregar mas atractivos")'("volver" "atractivos"))
     ((string=? keyword "cambiar destino")'("museo"))
+    ((string=? keyword "carrera tecnica")'("tecnica"))
+    ((string=? keyword "postgrado")'("doctorado" "magister" "postgrado"))
+    ((string=? keyword "volver")'("volver" "salir" "regresar"))
     (else '())))
 
 ;pertenecia
@@ -157,7 +163,7 @@
 (define (chatbot name mensaje . funciones)
   (if (and (string? name) (string? mensaje) (not (null? funciones)))
       (let ((nuevas-funciones (eliminar-repetidos funciones '())))
-        (cons (list name mensaje) nuevas-funciones))
+       (cons (list name mensaje) nuevas-funciones))
       funciones))
 
 (define (eliminar-repetidos funciones lista)
@@ -191,23 +197,53 @@
 ;REC : system
 ;Recursion : Ninguna
 ;Resumen : Funcion constructora de un sistema de chatbots, deja la fecha como registro de cuando se crea. 
-(define (system sistema chatbots)
+(define (system sistema . chatbots)
   (if (and (string? sistema) (list? chatbots))
-     (list
-        (cons sistema (cons chatbots
-           (cons (date->string fecha) '() ))))
+      (list
+       (cons sistema
+             (cons (delete-duplicates chatbots)  ; Eliminar duplicados
+                   (list (date->string fecha)))))
       null))
+
+(define (delete-duplicates lst)
+  (cond
+    ((null? lst) '())
+    ((member (car lst) (cdr lst))
+     (delete-duplicates (cdr lst)))
+    (else
+     (cons (car lst) (delete-duplicates (cdr lst))))))
+
 
 ;DOM : system x chatbot
 ;REC : system
 ;Recursion : Ninguna
 ;Resumen : Función modificadora para añadir chatbots a un sistema. 
-(define (system-add-chatbot sistema chatbot)
-  (if (and (list? sistema) (list? chatbot))
-      (if (member chatbot sistema)
-          sistema
-          (reverse (cons chatbot (reverse sistema))))
+(define (system-add-chatbot sistema . chatbots)
+  (if (and (list? sistema) (list? chatbots))
+      (let ((nuevos-chatbots (eliminar-duplicados chatbots (cdr sistema))))
+        (if (null? nuevos-chatbots)
+            sistema
+            (cons (car sistema) nuevos-chatbots)))
       '()))
+
+
+ (define (eliminar-duplicados chatbots lista)
+  (if (null? chatbots)
+      lista
+      (let ((nuevo-chatbot (car chatbots)))
+        (if (not (chatbot-existe-en-lista nuevo-chatbot lista))
+            (eliminar-duplicados (cdr chatbots) (append lista (list nuevo-chatbot)))
+            (eliminar-duplicados (cdr chatbots) lista)))))
+
+(define (chatbot-existe-en-lista chatbot lista)
+  (if (null? lista)
+      #f
+      (let ((element (car lista)))
+        (if (equal? (car element) (car chatbot))
+            #t
+            (chatbot-existe-en-lista chatbot (cdr lista))))))
+
+
 
 ;Funciones extra
 ;DOM : system x chatbot
@@ -403,7 +439,7 @@
 (define op4 (op 7 1 1 "paris" ))
 (define op5 (op 6 1 1 "torres del paine" ))
 (define op6 (op 8 0 1 "volver" ))
-(define op7 (op 17 1 2 "central park" ))
+(define op7 (op 20 1 2 "central park" ))
 (define op8 (op 10 1 2 "museos" ))
 (define op9 (op 11 1 3 "ningun otro atractivo"))
 (define op10 (op 16 1 1 "cambiar destino" ))
@@ -412,6 +448,10 @@
 (define op13 (op 13 1 3 "en familia" ))
 (define op14 (op 15 1 2 "agregar mas atractivos" ))
 (define op15 (op 14 1 1 "en realidad quiero otro destino" ))
+(define op16 (op 17 2 1 "carrera tecnica" ))
+(define op17 (op 18 2 1 "postgrado" ))
+(define op18 (op 19 0 1 "volver" ))
+
 
 ;Ejemplo anexos
 (define opciones '()) ; Inicializamos la lista de opciones
@@ -434,18 +474,42 @@
 (define f10(flow "Flujo principal Chatbot Bienvenido ¿Que te gustaria hacer?" op1 op2 op2 op2 op1))
 (define f11(flow-add-option f10 op1)) 
 
-(define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" f10 f10 f10 f10 f09)) 
+(define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10 f10)) 
+
+(define f20(flow "Flujo 1 Chatbot1\n¿Dónde te Gustaría ir?" op3 op4 op5 op6))
+(define f21(flow "Flujo 2 Chatbot1\n¿Qué atractivos te gustaría visitar?" op7 op8 op9 op10))
+(define f22(flow "Flujo 3 Chatbot1\n¿Vas solo o acompañado?" op11 op12 op13 op14 op15))
+
+(define cb1 (chatbot "Agencia Viajes"  "Bienvenido\n¿Dónde quieres viajar?" 1 f22 f21 f20))
+
+(define f30(flow "Flujo 1 Chatbot2\n¿Qué te gustaría estudiar?" op16 op17 op18))
+(define cb2(chatbot "Orientador Académico"  "Bienvenido\n¿Qué te gustaría estudiar?" 1 f30))
+
+
+(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0 cb1 cb2 ))
+(define s1 (system-add-chatbot s0 cb2 )) 
 
 ;Ejemplos de uso flow-add-option
-;(define f10 (flow "flujo1" op1)) ;creacion de otro flujo
-;(define f11(flow-add-option-2 f10 op1))
-;(define f12(flow-add-option-2 f11 op2))
+(define f100 (flow "flujo1" op1)) ;creacion de otro flujo
+(define f111(flow-add-option f100 op1))
+(define f122(flow-add-option f111 op2))
+(define s2 (system-add-user s1 "user1"))
+(define s3 (system-add-user s2 "user2"))
+(define s4 (system-add-user s3 "user2"))
+(define s5 (system-add-user s4 "user3"))
+(define s6 (system-login s5 "user8"))
+(define s7 (system-login s6 "user1"))
+(define s8 (system-login s7 "user2"))
+(define s9 (system-logout s8 "user2"))
+(define s10 (system-login s9 "user2"))
+
+
 
 ;Ejemplo de uso chatbot
-;(define cb10(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f12))
+;(define cb100(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f122))
 
 ;Ejemplo de uso chatbot-add-flow
-;(define cb11 (chatbot-add-flow cb10 f12))
+;(define cb111 (chatbot-add-flow cb100 f111))
 
 ;Ejemplo de uso system
 ;(define s0(system "newSystem" cb11))
