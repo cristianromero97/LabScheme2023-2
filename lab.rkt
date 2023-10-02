@@ -493,10 +493,13 @@
 (define f100 (flow "flujo1" op1)) ;creacion de otro flujo
 (define f111(flow-add-option f100 op1))
 (define f122(flow-add-option f111 op2))
+
+
 (define s2 (system-add-user s1 "user1"))
 (define s3 (system-add-user s2 "user2"))
 (define s4 (system-add-user s3 "user2"))
 (define s5 (system-add-user s4 "user3"))
+
 (define s6 (system-login s5 "user8"))
 (define s7 (system-login s6 "user1"))
 (define s8 (system-login s7 "user2"))
