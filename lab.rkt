@@ -28,6 +28,19 @@
     ((= numero 2) "2 Estudiar")
     ((= numero 3) "3 Arrendar un auto")
     ((= numero 4) "4 Pedir hora medica")
+    ((= numero 5) "1 new york")
+    ((= numero 6) "3 torres del paine")
+    ((= numero 7) "2 paris")
+    ((= numero 8) "4 volver")
+    ((= numero 9) "1 solo")
+    ((= numero 10) "2 museos")
+    ((= numero 11) "3 ningun otro atractivo")
+    ((= numero 12) "2 en pareja")
+    ((= numero 13) "3 en familia")
+    ((= numero 14) "5 en realidad quiero otro destino")
+    ((= numero 15) "4 agregar mas atractivos")
+    ((= numero 16) "4 cambiar destino")
+    ((= numero 17) "1 central park")
     (else '())))
 
 ;DOM : keyword (string)
@@ -40,6 +53,19 @@
     ((string=? keyword "estudiar") '("estudiar" "aprender" "perfeccionarme"))
     ((string=? keyword "arrendar") '("arrendar" "alquilar" "rentar"))
     ((string=? keyword "pedir")'("pedir" "solicitar" "requerir"))
+    ((string=? keyword "new york")'("USA" "Estados Unidos" "new york"))
+    ((string=? keyword "torres del paine")'("Chile" "Torres" "Torres del Paine"))
+    ((string=? keyword "paris")'("Francia" "Paris" "Eiffel"))
+    ((string=? keyword "volver")'("salir" "volvor" "retornar"))
+    ((string=? keyword "central park")'("central park" "central park" "central park"))
+    ((string=? keyword "solo")'("solo"))
+    ((string=? keyword "museos")'("museo"))
+    ((string=? keyword "ningun otro atractivo")'("museo"))
+    ((string=? keyword "en pareja")'("pareja"))
+    ((string=? keyword "en familia")'("familia"))
+    ((string=? keyword "en realidad quiero otro destino")'("cambiar destino"))
+    ((string=? keyword "agregar mas atractivos")'("volver" "atractivos"))
+    ((string=? keyword "cambiar destino")'("museo"))
     (else '())))
 
 ;pertenecia
@@ -67,7 +93,15 @@
 ;Recursion : Ninguna
 ;Resumen : A un flujo determinado le va asignando opciones.
 (define (flow tipo . opciones)
-  (cons tipo opciones))
+  (define (remove-duplicates lst)
+    (if (null? lst)
+        '()
+        (cons (car lst) (remove-duplicates (filter (lambda (x) (not (equal? (car x) (car (car lst))))) (cdr lst))))))
+
+  (if (and (string? tipo) (list? opciones))
+      (list tipo (remove-duplicates opciones))
+      '()))
+
 
 ;DOM : name (string) x option(list)
 ;REC : flow
@@ -107,24 +141,34 @@
 ;REC : flow
 ;Recursion : Ninguna
 ;Resumen : Añade a un flow existente una opcion y lo mete a una nueva lista o flujo (esta forma es la que la usare).
-(define (flow-add-option-2 flow option)
+(define (flow-add-option flow option)
   (if (and (list? flow) (list? option))
-      (if (member option (cdr flow))
-          flow
-          (cons (car flow) (cons option (cdr flow))))
-      '()))
+      (if (not(member option (cadr flow)))          
+          (cons (car flow) (cons (cdr flow) option))
+          flow)    
+    null ))
+
 
 ;DOM : name (string) x mensaje (string) x flows
 ;REC : chatbot
 ;Recursion : Ninguna
 ;Resumen : Crea un chatbot o bot inicial con ciertos parametros, basandonos en la estructura de listas, se debe asignar un nombre
 ; un mensaje de bienvenida y la opcion que se va a realizar (ver ejemplo).
-(define (chatbot name mensaje L)
-  (if (and (string? name)(string? mensaje)(list? L))
-     (list
-      (cons name (cons mensaje (cons L '())))
-      
-     )null))
+(define (chatbot name mensaje . funciones)
+  (if (and (string? name) (string? mensaje) (not (null? funciones)))
+      (let ((nuevas-funciones (eliminar-repetidos funciones '())))
+        (cons (list name mensaje) nuevas-funciones))
+      funciones))
+
+(define (eliminar-repetidos funciones lista)
+  (if (null? funciones)
+      lista
+      (let ((nueva-lista (if (not (member (car funciones) lista))
+                             (cons (car funciones) lista)
+                             lista)))
+        (eliminar-repetidos (cdr funciones) nueva-lista))))
+
+
 
 ;DOM : chatbot x flows
 ;REC : chatbot
@@ -353,10 +397,21 @@
 ; EJEMPLO DE USO
 
 ;Para crear mas opciones se debe seguir el siguiente planteamiento
-(define op1 (op 1 2 4 "viajar"))
-(define op2 (op 2 4 3 "estudiar"))
-(define op3 (op 2 4 2 "estudiar"))
-(define op4 (op 4 2 3 "pedir"))
+(define op1 (op 1 1 1 "viajar"))
+(define op2 (op 2 2 1 "estudiar"))
+(define op3 (op 5 1 2 "new york" ))
+(define op4 (op 7 1 1 "paris" ))
+(define op5 (op 6 1 1 "torres del paine" ))
+(define op6 (op 8 0 1 "volver" ))
+(define op7 (op 17 1 2 "central park" ))
+(define op8 (op 10 1 2 "museos" ))
+(define op9 (op 11 1 3 "ningun otro atractivo"))
+(define op10 (op 16 1 1 "cambiar destino" ))
+(define op11 (op 9 1 3 "solo" ))
+(define op12 (op 12 1 3 "en pareja" ))
+(define op13 (op 13 1 3 "en familia" ))
+(define op14 (op 15 1 2 "agregar mas atractivos" ))
+(define op15 (op 14 1 1 "en realidad quiero otro destino" ))
 
 ;Ejemplo anexos
 (define opciones '()) ; Inicializamos la lista de opciones
@@ -370,53 +425,61 @@
 ;(display (consultar-opciones opciones)) ; Muestra todas las opciones almacenadas
 
 ;lista aqui ir colocando todas las opciones
-(define opciones-disponibles (list op1 op2 op3 op4))
+(define opciones-disponibles (list op1 op2 op3 op4 op5 op6 op7 op8 op9 op10 op11 op12 op13 op14 op15))
 
 ;Ejemplo de uso funcion flow
 (define f09(flow "flujo1" op1 op2)) ;primera forma de ver los flujos
 (define f099(flow-aux "flujo1" 2)) ;segunda forma de ver los flujos
 
+(define f10(flow "Flujo principal Chatbot Bienvenido ¿Que te gustaria hacer?" op1 op2 op2 op2 op1))
+(define f11(flow-add-option f10 op1)) 
+
+(define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" f10 f10 f10 f10 f09)) 
+
 ;Ejemplos de uso flow-add-option
-(define f10 (flow "flujo1" op1)) ;creacion de otro flujo
-(define f11(flow-add-option-2 f10 op1))
-(define f12(flow-add-option-2 f11 op2))
+;(define f10 (flow "flujo1" op1)) ;creacion de otro flujo
+;(define f11(flow-add-option-2 f10 op1))
+;(define f12(flow-add-option-2 f11 op2))
 
 ;Ejemplo de uso chatbot
-(define cb10(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f12))
+;(define cb10(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f12))
 
 ;Ejemplo de uso chatbot-add-flow
-(define cb11 (chatbot-add-flow cb10 f12))
+;(define cb11 (chatbot-add-flow cb10 f12))
 
 ;Ejemplo de uso system
-(define s0(system "newSystem" cb11))
+;(define s0(system "newSystem" cb11))
 
 ;Ejemplo de uso system-add-chatbot
-(define s1 (system-add-chatbot s0 cb11))
+;(define s1 (system-add-chatbot s0 cb11))
 
 ;Ejemplo de uso system-add-user
-(define s2 (system-add-user s1 "user1"))
-(define s3 (system-add-user s2 "user2"))
-(define s4 (system-add-user s3 "user2")) ;solo añade un ocurrencia de user2
-(define s5 (system-add-user s4 "user3"))
+;(define s2 (system-add-user s1 "user1"))
+;(define s3 (system-add-user s2 "user2"))
+;(define s4 (system-add-user s3 "user2")) ;solo añade un ocurrencia de user2
+;(define s5 (system-add-user s4 "user3"))
 
 ;Ejemplo de uso system-login
 
-(define s44 (system-login s3 "user1")) ; Devolverá "Se ha ingresado a sesión correctamente." porque "user0" está en la lista de usuarios.
-(define s55 (system-login s3 "user9")) ; Devolverá "No se ha podido ingresar a sesión. El usuario no existe." porque "user9" no está en la lista de usuarios.
-(define s66 (system-login s3 42)) ; Devolverá "Error: Argumentos no válidos." porque el usuario no es una cadena.
+;(define s44 (system-login s3 "user1")) ; Devolverá "Se ha ingresado a sesión correctamente." porque "user0" está en la lista de usuarios.
+;(define s55 (system-login s3 "user9")) ; Devolverá "No se ha podido ingresar a sesión. El usuario no existe." porque "user9" no está en la lista de usuarios.
+;(define s66 (system-login s3 42)) ; Devolverá "Error: Argumentos no válidos." porque el usuario no es una cadena.
 
 ;Ejemplo de uso system-logout
 
-(define s444 (system-logout s3 "user1"))
+;(define s444 (system-logout s3 "user1"))
 
 ;Ejemplo de uso system-talk-rec
-(define s6 (system-talk-rec s1 "estudiar"))
+;(define s6 (system-talk-rec s1 "estudiar"))
 
 ;Ejemplo de uso system-talk-norec
-(define s7 (system-talk-norec s1 "viajar"))
+;(define s7 (system-talk-norec s1 "viajar"))
 
 ; Ejemplo de uso system-synthesis
-(define s9 (system-add-user s1 "user0"))
-(define s10 (system-add-chatbot s9 cb11))
-(define s11 (system-synthesis s10 "user0"))
+;(define s9 (system-add-user s1 "user0"))
+;(define s10 (system-add-chatbot s9 cb11))
+;(define s11 (system-synthesis s10 "user0"))
+
+
+
 
