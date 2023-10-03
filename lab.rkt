@@ -166,6 +166,10 @@
        (cons (list name mensaje) nuevas-funciones))
       funciones))
 
+;DOM : option x list
+;REC : list
+;Recursion : cola
+;Resumen : Permite eliminar duplicados en la funcion de chatbot
 (define (eliminar-repetidos funciones lista)
   (if (null? funciones)
       lista
@@ -173,8 +177,6 @@
                              (cons (car funciones) lista)
                              lista)))
         (eliminar-repetidos (cdr funciones) nueva-lista))))
-
-
 
 ;DOM : chatbot x flows
 ;REC : chatbot
@@ -205,6 +207,10 @@
                    (list (date->string fecha)))))
       null))
 
+;DOM : list
+;REC : system
+;Recursion : Ninguna
+;Resumen : Funcion que elimina duplicados. 
 (define (delete-duplicates lst)
   (cond
     ((null? lst) '())
@@ -227,14 +233,21 @@
       '()))
 
 
- (define (eliminar-duplicados chatbots lista)
+;DOM : chatbot x list
+;REC : chatbots
+;Recursion : Ninguna
+;Resumen : Funcion que elimina duplicados. 
+(define (eliminar-duplicados chatbots lista)
   (if (null? chatbots)
       lista
       (let ((nuevo-chatbot (car chatbots)))
         (if (not (chatbot-existe-en-lista nuevo-chatbot lista))
             (eliminar-duplicados (cdr chatbots) (append lista (list nuevo-chatbot)))
             (eliminar-duplicados (cdr chatbots) lista)))))
-
+;DOM : chatbot x list
+;REC : system
+;Recursion : Ninguna
+;Resumen : Funcion que verifica existencia de chatbots en la lista. 
 (define (chatbot-existe-en-lista chatbot lista)
   (if (null? lista)
       #f
@@ -242,8 +255,6 @@
         (if (equal? (car element) (car chatbot))
             #t
             (chatbot-existe-en-lista chatbot (cdr lista))))))
-
-
 
 ;Funciones extra
 ;DOM : system x chatbot
