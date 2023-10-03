@@ -59,7 +59,7 @@
     ((string=? keyword "new york")'("USA" "Estados Unidos" "new york"))
     ((string=? keyword "torres del paine")'("Chile" "Torres" "Torres del Paine"))
     ((string=? keyword "paris")'("Francia" "Paris" "Eiffel"))
-    ((string=? keyword "volver")'("salir" "volvor" "retornar"))
+    ((string=? keyword "volver")'("salir" "volver" "retornar"))
     ((string=? keyword "central park")'("central park" "central park" "central park"))
     ((string=? keyword "solo")'("solo"))
     ((string=? keyword "museos")'("museo"))
@@ -373,7 +373,7 @@
         "Hola\n"        
         "Interesante..... entonces planeas" (car resultado)
         "Segun la base de datos tu proposito es" (cdr resultado)
-        "Por ende tu objetivo analizando lo anterior seria" (cddr resultado)
+        "Por ende tu objetivo analizando lo anterior seria"(cdr resultado)
         "Espero haberte ayudado..............."
         )
         )))
@@ -511,7 +511,7 @@
 (define s4 (system-add-user s3 "user2"))
 (define s5 (system-add-user s4 "user3"))
 
-(define s6 (system-login s5 "user8"))
+(define s6 (system-login s5 "user1"))
 (define s7 (system-login s6 "user1"))
 (define s8 (system-login s7 "user2"))
 (define s9 (system-logout s8 "user2"))
