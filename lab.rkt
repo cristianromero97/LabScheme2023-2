@@ -365,42 +365,37 @@
 ;REC : system
 ;Recursion : Cola
 ;Resumen : Función que permite interactuar con un chatbot.
-(define (system-talk-rec sistema keyword)
-  (define (buscar-en-chatbot chatbot keyword)
+(define (system-talk-rec sistema respuesta)
+  (define (buscar-flujo-por-respuesta flujo respuesta)
     (cond
-      ((null? chatbot) '()) ; Si no se encuentra en el chatbot actual
-      ((list? (car chatbot))
-       (let ((resultado (buscar-en-chatbot (car chatbot) keyword)))
-         (if (not (null? resultado))
-             resultado
-             (buscar-en-chatbot (cdr chatbot) keyword))))
-      ((string? (car chatbot))
-       (if (string=? (car chatbot) keyword)
-           chatbot ; Si se encuentra la opción, se devuelve el chatbot actual
-           (buscar-en-chatbot (cdr chatbot) keyword)))
-      (else (buscar-en-chatbot (cdr chatbot) keyword))))
+      ((null? flujo) '("Opción no encontrada"))
+      ((string? (car flujo))
+       (if (string=? (car flujo) respuesta)
+           (cdr flujo) ; Se encontró la respuesta, devuelve el siguiente flujo
+           (buscar-flujo-por-respuesta (cdr flujo) respuesta)))
+      (else
+       (buscar-flujo-por-respuesta (cdr flujo) respuesta))))
 
-  (define (recursivo sistema keyword)
-    (cond
-      ((null? sistema) '("Opción no encontrada")) ; Si no se encuentra en ningún chatbot
-      ((list? sistema)
-       (let ((resultado (buscar-en-chatbot (car sistema) keyword)))
-         (if (not (null? resultado))
-             resultado
-             (recursivo (cdr sistema) keyword))))
-      (else (recursivo (cdr sistema) keyword))))
-
-  (let ((resultado (recursivo sistema keyword)))
-    (if (equal? resultado '("Opción no encontrada"))
-        resultado
-        (list
-        "Hola\n"        
-        "Interesante..... entonces planeas" (car resultado)
-        "Segun la base de datos tu proposito es" (cdr resultado)
-        "Por ende tu objetivo analizando lo anterior seria"(cdr resultado)
-        "Espero haberte ayudado..............."
-        )
-        )))
+  (let* ((usuario "user2") ; Reemplaza esto con el usuario actual
+         (user-flow (find-user-flow sistema usuario)))
+    (if (not (null? user-flow))
+        (let ((flujo-actual user-flow)
+              (respuestas '()))
+          (for-each
+           (lambda (respuesta)
+             (let ((nuevo-flujo (buscar-flujo-por-respuesta flujo-actual respuesta)))
+               (if (not (null? nuevo-flujo))
+                   (begin
+                     (set! respuestas (cons respuesta respuestas))
+                     (set! flujo-actual nuevo-flujo))
+                   (set! flujo-actual '("Opción no encontrada")))))
+           (string-split respuesta ",")) ; Suponiendo que las respuestas se separan por comas
+          (list "Hola"
+                "Interesante..... entonces planeas"
+                (string-join respuestas ", ") ; Unimos las respuestas en un solo string
+                "Espero haberte ayudado...............")
+          )
+        "El usuario no tiene un flujo asignado.")))
 
 ;DOM : system X message (string)
 ;REC : system
@@ -455,19 +450,15 @@
 ;REC : system
 ;Recursion : Ninguna
 ;Resumen : Función que busca al usuario si esta dentro del sistema.
+
 (define (find-user-flow sistema usuario)
-  ; Buscar el flujo del usuario en el sistema
-  (if (null? sistema)
-      '()
-      (let ((current-user (car sistema)))
-        (if (string=? (car current-user) usuario)
-            (cdr current-user)
-            (find-user-flow (cdr sistema) usuario)))))
-
-
-
+  (cond
+    ((null? sistema) '()) ; Si no se encuentra en ningún chatbot
+    ((string=? (caar sistema) usuario) (cdar sistema)) ; Si encontramos al usuario, devolvemos su flujo
+    (else (find-user-flow (cdr sistema) usuario))))
 
 ;Función para generar números pseudoaleatorios:
+;Funcion para la funcion de simulate (no implementada)
 (define (myRandom Xn)
   (modulo (+ (* 1103515245 Xn) 12345) 2147483648)
 )
@@ -477,7 +468,10 @@
 
 
 
-; EJEMPLO DE USO
+; Seccion de Scrips de pruebas
+;ACLARACION : Hay algunas funciones que poseen una variacion con respecto al scrips
+; dejde debajo del scrips la implementacion equivalente...........
+
 
 ;Para crear mas opciones se debe seguir el siguiente planteamiento
 (define op1 (op 1 1 1 "viajar"))
@@ -555,6 +549,20 @@
 
 
 
+(define s11 (system-talk-rec s10 "viajar"))
+(define s12 (system-talk-rec s11 "1"))
+(define s13 (system-talk-rec s12 "1"))
+(define s14 (system-talk-rec s13 "Museo"))
+(define s15 (system-talk-rec s14 "1"))
+(define s16 (system-talk-rec s15 "3"))
+(define s17 (system-talk-rec s16 "5"))
+(display (system-synthesis s17 "user2"))
+
+
+
+
+
+; Seccion de otros ejemplos
 ;Ejemplo de uso chatbot
 ;(define cb100(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f122))
 
