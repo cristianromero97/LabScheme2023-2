@@ -300,9 +300,21 @@
 (define (system-add-user sistema usuario)
   (if (string? usuario)
       (if (not (member usuario (car sistema)))
-          (cons (cons usuario (car sistema)) (cdr sistema))
+          (cons (cons usuario
+           (car sistema)) (cdr sistema))
           sistema)
       '()))
+
+;DOM : system X user (string)
+;REC : system
+;Recursion : Ninguna
+;Resumen : Función que permite iniciar una sesión en el sistema (forma que funciona de 1 en 1).
+;(define (system-login-2 sistema usuario)
+ ; (if (and (string? usuario) (list? sistema))
+  ;    (if (list-member (car sistema) usuario)
+   ;       "Se ha ingresado a sesión correctamente."
+    ;      "Error: Usuario no encontrado.")
+     ; "Error: Argumentos no válidos."))
 
 ;DOM : system X user (string)
 ;REC : system
@@ -310,32 +322,44 @@
 ;Resumen : Función que permite iniciar una sesión en el sistema.
 (define (system-login sistema usuario)
   (if (and (string? usuario) (list? sistema))
-      (if (list-member (car sistema) usuario)
-          "Se ha ingresado a sesión correctamente."
-          "Error: Usuario no encontrado.")
-      "Error: Argumentos no válidos."))
+      (if (not (member usuario (car sistema)))
+          "Error usuario no encontrado en el sistema..." 
+          (cons (cons (list "Inicio de sesion de usuario :" usuario)
+            (car sistema))(cdr sistema)))
+      "Error de lectura...."))
 
 ;DOM : lst x item
 ;REC : list
 ;Recursion : Ninguna
 ;Resumen : Función que verifica en caso de haber duplicados. 
-(define (list-member lst item)
-  (cond
-    ((null? lst) #f)
-    ((equal? (car lst) item) #t)
-    (else (list-member (cdr lst) item))))
-
+;(define (list-member lst item)
+ ; (cond
+  ;  ((null? lst) #f)
+   ; ((equal? (car lst) item) #t)
+    ;(else (list-member (cdr lst) item))))
+  
 ;DOM : system
 ;REC : system
 ;Recursion : Ninguna
 ;Resumen : Función que permite cerrar una sesión abierta.
+;(define (system-logout sistema usuario)
+ ; (if (and (string? usuario) (list? sistema))
+  ;    (if (list-member (car sistema) usuario)
+   ;       "Se ha cerrado la sesion correctamente."
+    ;      "Error: Usuario no esta dentro del sistema.")
+     ; "Error: Argumentos no válidos."))
+
+;DOM : system
+;REC : system
+;Recursion : Ninguna
+;Resumen : Función que permite cerrar una sesión abierta.;DOM : system
 (define (system-logout sistema usuario)
   (if (and (string? usuario) (list? sistema))
-      (if (list-member (car sistema) usuario)
-          "Se ha cerrado la sesion correctamente."
-          "Error: Usuario no esta dentro del sistema.")
-      "Error: Argumentos no válidos."))
-
+      (if (not (member usuario (car sistema)))
+          "Error usuario no encontrado en el sistema..." 
+          (cons (cons (list "Cierre de sesion de :" usuario)
+            (car sistema))(cdr sistema)))
+      "Error de lectura...."))
 
 ;DOM : system X message (string)
 ;REC : system
@@ -439,6 +463,18 @@
         (if (string=? (car current-user) usuario)
             (cdr current-user)
             (find-user-flow (cdr sistema) usuario)))))
+
+
+
+
+;Función para generar números pseudoaleatorios:
+(define (myRandom Xn)
+  (modulo (+ (* 1103515245 Xn) 12345) 2147483648)
+)
+
+
+
+
 
 
 ; EJEMPLO DE USO
