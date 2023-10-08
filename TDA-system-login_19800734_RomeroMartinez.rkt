@@ -7,8 +7,8 @@
 ;DOM : system X user (string)
 ;REC : system
 ;Recursion : Ninguna
-;Resumen : Función que permite iniciar una sesión en el sistema.
-(define (system-login sistema usuario)
+;Resumen : Función que permite iniciar una sesión en el sistema (otra forma de verlo).
+(define (system-login-1 sistema usuario)
   (if (and (string? usuario) (list? sistema))
       (if (list-member (car sistema) usuario)
           "Se ha ingresado a sesión correctamente."
@@ -24,6 +24,19 @@
     ((null? lst) #f)
     ((equal? (car lst) item) #t)
     (else (list-member (cdr lst) item))))
+
+;DOM : system X user (string)
+;REC : system
+;Recursion : Ninguna
+;Resumen : Función que permite iniciar una sesión en el sistema.
+(define (system-login sistema usuario)
+  (if (and (string? usuario) (list? sistema))
+      (if (not (member usuario (car sistema)))
+          "Error usuario no encontrado en el sistema..." 
+          (cons (cons (list "Inicio de sesion de usuario :" usuario)
+            (car sistema))(cdr sistema)))
+      "Error de lectura...."))
+
 
 ;Ejemplo de uso system-login
 
