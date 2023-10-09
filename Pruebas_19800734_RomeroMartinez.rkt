@@ -232,7 +232,6 @@
             (cons (car sistema) nuevos-chatbots)))
       '()))
 
-
 ;DOM : chatbot x list
 ;REC : chatbots
 ;Recursion : Ninguna
@@ -244,6 +243,7 @@
         (if (not (chatbot-existe-en-lista nuevo-chatbot lista))
             (eliminar-duplicados (cdr chatbots) (append lista (list nuevo-chatbot)))
             (eliminar-duplicados (cdr chatbots) lista)))))
+
 ;DOM : chatbot x list
 ;REC : system
 ;Recursion : Ninguna
@@ -278,8 +278,6 @@
     ((equal? chatbot-name (car sistema)) #t)
     (else (contains-chatbot (cdr sistema) chatbot-name))))
 
-;(define s98 (remover-duplicado (cdr s1) (car s1)))
-
 ;DOM : system x chatbot
 ;REC : system
 ;Recursion : Ninguna
@@ -290,8 +288,6 @@
           (cons chatbot sistema)
           sistema)
       '()))
-
-;(define s99 (system-add-chatbot-no-duplicado s1 cb11))
 
 ;DOM : system X user (string)
 ;REC : system
@@ -308,17 +304,6 @@
 ;DOM : system X user (string)
 ;REC : system
 ;Recursion : Ninguna
-;Resumen : Función que permite iniciar una sesión en el sistema (forma que funciona de 1 en 1).
-;(define (system-login-2 sistema usuario)
- ; (if (and (string? usuario) (list? sistema))
-  ;    (if (list-member (car sistema) usuario)
-   ;       "Se ha ingresado a sesión correctamente."
-    ;      "Error: Usuario no encontrado.")
-     ; "Error: Argumentos no válidos."))
-
-;DOM : system X user (string)
-;REC : system
-;Recursion : Ninguna
 ;Resumen : Función que permite iniciar una sesión en el sistema.
 (define (system-login sistema usuario)
   (if (and (string? usuario) (list? sistema))
@@ -328,31 +313,10 @@
             (car sistema))(cdr sistema)))
       "Error de lectura...."))
 
-;DOM : lst x item
-;REC : list
-;Recursion : Ninguna
-;Resumen : Función que verifica en caso de haber duplicados. 
-;(define (list-member lst item)
- ; (cond
-  ;  ((null? lst) #f)
-   ; ((equal? (car lst) item) #t)
-    ;(else (list-member (cdr lst) item))))
-  
 ;DOM : system
 ;REC : system
 ;Recursion : Ninguna
 ;Resumen : Función que permite cerrar una sesión abierta.
-;(define (system-logout sistema usuario)
- ; (if (and (string? usuario) (list? sistema))
-  ;    (if (list-member (car sistema) usuario)
-   ;       "Se ha cerrado la sesion correctamente."
-    ;      "Error: Usuario no esta dentro del sistema.")
-     ; "Error: Argumentos no válidos."))
-
-;DOM : system
-;REC : system
-;Recursion : Ninguna
-;Resumen : Función que permite cerrar una sesión abierta.;DOM : system
 (define (system-logout sistema usuario)
   (if (and (string? usuario) (list? sistema))
       (if (not (member usuario (car sistema)))
@@ -365,37 +329,43 @@
 ;REC : system
 ;Recursion : Cola
 ;Resumen : Función que permite interactuar con un chatbot.
-(define (system-talk-rec sistema respuesta)
-  (define (buscar-flujo-por-respuesta flujo respuesta)
+(define (system-talk-rec sistema keyword)
+  ; Función para buscar un flujo específico en el sistema
+  (define (buscar-flujo sistema keyword)
     (cond
-      ((null? flujo) '("Opción no encontrada"))
-      ((string? (car flujo))
-       (if (string=? (car flujo) respuesta)
-           (cdr flujo) ; Se encontró la respuesta, devuelve el siguiente flujo
-           (buscar-flujo-por-respuesta (cdr flujo) respuesta)))
-      (else
-       (buscar-flujo-por-respuesta (cdr flujo) respuesta))))
+      ((null? sistema) '()) ; Si no se encuentra en ningún chatbot
+      ((list? sistema)
+       (let ((resultado (buscar-en-chatbot (car sistema) keyword)))
+         (if (not (null? resultado))
+             resultado
+             (buscar-flujo (cdr sistema) keyword))))
+      (else (buscar-flujo (cdr sistema) keyword))))
 
-  (let* ((usuario "user2") ; Reemplaza esto con el usuario actual
-         (user-flow (find-user-flow sistema usuario)))
-    (if (not (null? user-flow))
-        (let ((flujo-actual user-flow)
-              (respuestas '()))
-          (for-each
-           (lambda (respuesta)
-             (let ((nuevo-flujo (buscar-flujo-por-respuesta flujo-actual respuesta)))
-               (if (not (null? nuevo-flujo))
-                   (begin
-                     (set! respuestas (cons respuesta respuestas))
-                     (set! flujo-actual nuevo-flujo))
-                   (set! flujo-actual '("Opción no encontrada")))))
-           (string-split respuesta ",")) ; Suponiendo que las respuestas se separan por comas
-          (list "Hola"
-                "Interesante..... entonces planeas"
-                (string-join respuestas ", ") ; Unimos las respuestas en un solo string
-                "Espero haberte ayudado...............")
-          )
-        "El usuario no tiene un flujo asignado.")))
+  ; Función para seleccionar una opción en un flujo dado
+  (define (seleccionar-opcion flujo numero)
+    (cond
+      ((null? flujo) '("Opción no encontrada")) ; Si no se encuentra en el flujo
+      ((list? flujo)
+       (if (= numero 0) flujo ; Si el número es 0, se devuelve el flujo actual
+           (let ((opcion (car flujo)))
+             (if (equal? (id opcion) numero)
+                 (synonim (synonim keyword) (option opcion))
+                 (seleccionar-opcion (cdr flujo) numero))))))
+       )
+
+
+  (let* ((resultado-flujo (buscar-flujo sistema keyword)))
+    (if (null? resultado-flujo)
+        '("Opción no encontrada")
+        (let ((flujo (cdr resultado-flujo)))
+          (if (null? flujo)
+              '("Opción no encontrada")
+              (let ((numero (string->number keyword)))
+                (if (and (number? numero) (>= numero 0))
+                    (seleccionar-opcion flujo numero)
+                     (list
+                      (op 1 2 3 keyword))
+                     )))))))
 
 ;DOM : system X message (string)
 ;REC : system
@@ -450,7 +420,6 @@
 ;REC : system
 ;Recursion : Ninguna
 ;Resumen : Función que busca al usuario si esta dentro del sistema.
-
 (define (find-user-flow sistema usuario)
   (cond
     ((null? sistema) '()) ; Si no se encuentra en ningún chatbot
@@ -463,47 +432,168 @@
   (modulo (+ (* 1103515245 Xn) 12345) 2147483648)
 )
 
-
-
-
-
-
+;----------------------------------------------------------------------------------------------------
 ; Seccion de Scrips de pruebas
 ;ACLARACION : Hay algunas funciones que poseen una variacion con respecto al scrips
-; dejde debajo del scrips la implementacion equivalente...........
+; deje debajo del scrips la implementacion equivalente...........
+;----------------------------------------------------------------------------------------------------
+;;Script de Pruebas N°2
 
-
-;Para crear mas opciones se debe seguir el siguiente planteamiento
+;(define op1 (option  1 "1) Viajar" 2 1 "viajar" "turistear" "conocer"))
 (define op1 (op 1 1 1 "viajar"))
+;(define op2 (option  2 "2) Estudiar" 3 1 "estudiar" "aprender" "perfeccionarme"))
 (define op2 (op 2 2 1 "estudiar"))
+
+;(define f10 (flow 1 "Flujo Principal Chatbot 1\nBienvenido\n¿Qué te gustaría hacer?" op1 op2 op2 op2 op2 op1)) 
+(define f10(flow "Flujo principal Chatbot Bienvenido ¿Que te gustaria hacer?" op1 op2 op2 op2 op1)) ;solo añade una ocurrencia de op2
+;(define f11 (flow-add-option f10 op1)) ;se intenta añadir opción duplicada            
+(define f11(flow-add-option f10 op1)) ;se intenta añadir opción duplicada
+;(define cb0 (chatbot 0 "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10))  ;solo añade una ocurrencia de f10
+(define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10 f10))
+
+;Chatbot1
+;(define op3 (option 1 "1) New York, USA" 1 2 "USA" "Estados Unidos" "New York"))
 (define op3 (op 5 1 2 "new york" ))
+;(define op4 (option 2 "2) París, Francia" 1 1 "Paris" "Eiffel"))
 (define op4 (op 7 1 1 "paris" ))
+;(define op5 (option 3 "3) Torres del Paine, Chile" 1 1 "Chile" "Torres" "Paine" "Torres Paine" "Torres del Paine"))
 (define op5 (op 6 1 1 "torres del paine" ))
+;(define op6 (option 4 "4) Volver" 0 1 "Regresar" "Salir" "Volver"))
 (define op6 (op 8 0 1 "volver" ))
+
+;Opciones segundo flujo Chatbot1
+;(define op7 (option 1 "1) Central Park" 1 2 "Central" "Park" "Central Park"))
 (define op7 (op 20 1 2 "central park" ))
+;(define op8 (option 2 "2) Museos" 1 2 "Museo"))
 (define op8 (op 10 1 2 "museos" ))
+;(define op9 (option 3 "3) Ningún otro atractivo" 1 3 "Museo"))
 (define op9 (op 11 1 3 "ningun otro atractivo"))
+;(define op10 (option 4 "4) Cambiar destino" 1 1 "Cambiar" "Volver" "Salir"))
 (define op10 (op 16 1 1 "cambiar destino" ))
+;(define op11 (option 1 "1) Solo" 1 3 "Solo"))
 (define op11 (op 9 1 3 "solo" ))
+;(define op12 (option 2 "2) En pareja" 1 3 "Pareja"))
 (define op12 (op 12 1 3 "en pareja" ))
+;(define op13 (option 3 "3) En familia" 1 3 "Familia"))
 (define op13 (op 13 1 3 "en familia" ))
+;(define op14 (option 4 "4) Agregar más atractivos" 1 2 "Volver" "Atractivos"))
 (define op14 (op 15 1 2 "agregar mas atractivos" ))
+;(define op15 (option 5 "5) En realidad quiero otro destino" 1 1 "Cambiar destino"))
 (define op15 (op 14 1 1 "en realidad quiero otro destino" ))
+
+;(define f20 (flow 1 "Flujo 1 Chatbot1\n¿Dónde te Gustaría ir?" op3 op4 op5 op6))
+(define f20(flow "Flujo 1 Chatbot1\n¿Dónde te Gustaría ir?" op3 op4 op5 op6))
+;(define f21 (flow 2 "Flujo 2 Chatbot1\n¿Qué atractivos te gustaría visitar?" op7 op8 op9 op10))
+(define f21(flow "Flujo 2 Chatbot1\n¿Qué atractivos te gustaría visitar?" op7 op8 op9 op10))
+;(define f22 (flow 3 "Flujo 3 Chatbot1\n¿Vas solo o acompañado?" op11 op12 op13 op14 op15))
+(define f22(flow "Flujo 3 Chatbot1\n¿Vas solo o acompañado?" op11 op12 op13 op14 op15))
+;(define cb1 (chatbot 1 "Agencia Viajes"  "Bienvenido\n¿Dónde quieres viajar?" 1 f20 f21 f22))
+(define cb1 (chatbot "Agencia Viajes"  "Bienvenido\n¿Dónde quieres viajar?" 1 f22 f21 f20))
+
+;Chatbot2
+;(define op16 (option 1 "1) Carrera Técnica" 2 1 "Técnica"))
 (define op16 (op 17 2 1 "carrera tecnica" ))
+;(define op17 (option 2 "2) Postgrado" 2 1 "Doctorado" "Magister" "Postgrado"))
 (define op17 (op 18 2 1 "postgrado" ))
+;(define op18 (option 3 "3) Volver" 0 1 "Volver" "Salir" "Regresar"))
 (define op18 (op 19 0 1 "volver" ))
 
 
-;Ejemplo anexos
-(define opciones '()) ; Inicializamos la lista de opciones
-;(set! opciones (op 1 2 3 "viajar" opciones)) ; Agregamos la primera opción
-;(set! opciones (op 2 3 4 "estudiar" opciones)) ; Agregamos la segunda opción
+;(define f30 (flow 1 "Flujo 1 Chatbot2\n¿Qué te gustaría estudiar?" op16 op17 op18))
+(define f30(flow "Flujo 1 Chatbot2\n¿Qué te gustaría estudiar?" op16 op17 op18))
+;(define cb2 (chatbot 2 "Orientador Académico"  "Bienvenido\n¿Qué te gustaría estudiar?" 1 f30))
+(define cb2(chatbot "Orientador Académico"  "Bienvenido\n¿Qué te gustaría estudiar?" 1 f30))
+
+;Sistema
+;(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0 cb1 cb2))
+(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0 cb1 cb2 ))
+;(define s1 (system-add-chatbot s0 cb0)) ;igual a s0
+(define s1 (system-add-chatbot s0 cb2 )) 
+;(define s2 (system-add-user s1 "user1"))
+(define s2 (system-add-user s1 "user1"))
+;(define s3 (system-add-user s2 "user2"))
+(define s3 (system-add-user s2 "user2"))
+;(define s4 (system-add-user s3 "user2"))
+(define s4 (system-add-user s3 "user2"))
+;(define s5 (system-add-user s4 "user3"))
+(define s5 (system-add-user s4 "user3"))
+;(define s6 (system-login s5 "user8"))
+(define s6 (system-login s5 "user1"))
+;(define s7 (system-login s6 "user1"))
+(define s7 (system-login s6 "user1"))
+;(define s8 (system-login s7 "user2"))
+(define s8 (system-login s7 "user2"))
+;(define s9 (system-logout s8))
+(define s9 (system-logout s8 "user2"))
+;(define s10 (system-login s9 "user2"))
+(define s10 (system-login s9 "user2"))
+
+
+(define s11(system-talk-rec s10 "viajar"))
+;(define s12(system-talk-rec s11 "1"))
+;(define s13 (system-talk-rec s12 "1"))
+;(define s14 (system-talk-rec s13 "museo"))
+;(define s15 (system-talk-rec s14 "1"))
+;(define s16 (system-talk-rec s15 "3"))
+;(define s17 (system-talk-rec s16 "5"))
+;(display (system-synthesis s17 "user2"))
+;(system-simulate s0 5 32131)  ;no implementada
+
+
+;---------------------------------------------------------------------------------------------------------------------------
+
+;Script de Pruebas N°1
+;Para usar este Scrips se debe poner en comentario la seccion de arriba.
+;Aclaracion : Cada funcion debajo de esta se encuentra la implementacion (fijarse en como luce el scrips de pruebas n°2)
+
+;----------------------------------------------------------------------------------------------------------------------------
+
+;(define op1 (option  1 "1) Viajar" 2 1 "viajar" "turistear" "conocer"))
+;(define op1 (op 1 1 1 "viajar"))
+;(define op2 (option  2 "2) Estudiar" 3 1 "estudiar" "aprender" "perfeccionarme"))
+;(define op2 (op 2 2 1 "estudiar"))
+;(define f10 (flow 1 "flujo1" op1 op2 op2 op2 op2 op1)) ;solo añade una ocurrencia de op2
+;(define f10(flow "flujo1" op1 op2 op2 op2 op1)) ;solo añade una ocurrencia de op2
+;(define f11 (flow-add-option f10 op1)) ;se intenta añadir opción duplicada
+;(define f11(flow-add-option f10 op1))
+;(define cb0 (chatbot 0 "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10))  ;solo añade una ocurrencia de f10
+;(define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10 f10))
+;(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0))
+;(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0))
+;(define s1 (system-add-chatbot s0 cb0)) ;igual a s0
+;(define s1(system-add-chatbot s0 cb0))
+;(define s2 (system-add-user s1 "user1"))
+;(define s2 (system-add-user s1 "user1"))
+;(define s3 (system-add-user s2 "user2"))
+;(define s3 (system-add-user s2 "user2"))
+;(define s4 (system-add-user s3 "user2")) ;solo añade un ocurrencia de user2
+;(define s4 (system-add-user s3 "user2"))
+;(define s5 (system-add-user s4 "user3"))
+;(define s5 (system-add-user s4 "user3"))
+;(define s6 (system-login s5 "user8")) ;user8 no existe. No inicia sesión
+;(define s6 (system-login s5 "user1"))
+;(define s7 (system-login s6 "user1"))
+;(define s7 (system-login s6 "user1"))
+;(define s8 (system-login s7 "user2"))  ;no permite iniciar sesión a user2, pues user1 ya inició sesión
+;(define s8 (system-login s7 "user2"))
+;(define s9 (system-logout s8))
+;(define s9 (system-logout s8 "user2"))
+;(define s10 (system-login s9 "user2"))  
+;(define s10 (system-login s9 "user2"))
+
+;-------------------------------------------------------------------------------------------------------------------------
+
+;OTROS EJEMPLOS (en caso de que no se vean, ir a los archivos por separado)
+
+;Ejemplos de uso flow-add-option
+(define f100 (flow "flujo1" op1)) ;creacion de otro flujo
+(define f111(flow-add-option f100 op1))
+(define f122(flow-add-option f111 op2))
 
 ; Función para consultar opciones
 (define (consultar-opciones opciones)
   opciones)
 
-;(display (consultar-opciones opciones)) ; Muestra todas las opciones almacenadas
 
 ;lista aqui ir colocando todas las opciones
 (define opciones-disponibles (list op1 op2 op3 op4 op5 op6 op7 op8 op9 op10 op11 op12 op13 op14 op15))
@@ -512,57 +602,6 @@
 (define f09(flow "flujo1" op1 op2)) ;primera forma de ver los flujos
 (define f099(flow-aux "flujo1" 2)) ;segunda forma de ver los flujos
 
-(define f10(flow "Flujo principal Chatbot Bienvenido ¿Que te gustaria hacer?" op1 op2 op2 op2 op1))
-(define f11(flow-add-option f10 op1)) 
-
-(define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10 f10)) 
-
-(define f20(flow "Flujo 1 Chatbot1\n¿Dónde te Gustaría ir?" op3 op4 op5 op6))
-(define f21(flow "Flujo 2 Chatbot1\n¿Qué atractivos te gustaría visitar?" op7 op8 op9 op10))
-(define f22(flow "Flujo 3 Chatbot1\n¿Vas solo o acompañado?" op11 op12 op13 op14 op15))
-
-(define cb1 (chatbot "Agencia Viajes"  "Bienvenido\n¿Dónde quieres viajar?" 1 f22 f21 f20))
-
-(define f30(flow "Flujo 1 Chatbot2\n¿Qué te gustaría estudiar?" op16 op17 op18))
-(define cb2(chatbot "Orientador Académico"  "Bienvenido\n¿Qué te gustaría estudiar?" 1 f30))
-
-
-(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0 cb1 cb2 ))
-(define s1 (system-add-chatbot s0 cb2 )) 
-
-;Ejemplos de uso flow-add-option
-(define f100 (flow "flujo1" op1)) ;creacion de otro flujo
-(define f111(flow-add-option f100 op1))
-(define f122(flow-add-option f111 op2))
-
-
-(define s2 (system-add-user s1 "user1"))
-(define s3 (system-add-user s2 "user2"))
-(define s4 (system-add-user s3 "user2"))
-(define s5 (system-add-user s4 "user3"))
-
-(define s6 (system-login s5 "user1"))
-(define s7 (system-login s6 "user1"))
-(define s8 (system-login s7 "user2"))
-(define s9 (system-logout s8 "user2"))
-(define s10 (system-login s9 "user2"))
-
-
-
-(define s11 (system-talk-rec s10 "viajar"))
-(define s12 (system-talk-rec s11 "1"))
-(define s13 (system-talk-rec s12 "1"))
-(define s14 (system-talk-rec s13 "Museo"))
-(define s15 (system-talk-rec s14 "1"))
-(define s16 (system-talk-rec s15 "3"))
-(define s17 (system-talk-rec s16 "5"))
-(display (system-synthesis s17 "user2"))
-
-
-
-
-
-; Seccion de otros ejemplos
 ;Ejemplo de uso chatbot
 ;(define cb100(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f122))
 
