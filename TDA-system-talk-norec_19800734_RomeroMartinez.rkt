@@ -39,4 +39,4 @@
     (else (buscar-en-chatbot (cdr chatbot) keyword))))
 
 ;Ejemplo de uso system-talk-norec
-(define s7 (system-talk-norec s8 "viajar"))
+(define s72 (system-talk-norec s85 "viajar"))

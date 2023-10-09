@@ -1,5 +1,8 @@
 #lang racket
-(require "main_19800734_RomeroMartinez.rkt")
+;Importo archivos
+(require "main_19800734_RomeroMartinez.rkt") ;por algun motivo genera un error
+(require "General_19800734_RomeroMartinez.rkt")
+(provide(all-defined-out))
 
 ;----------------------------------------------------------------------------------------------------
 ; Seccion de Scrips de pruebas
@@ -9,46 +12,46 @@
 ;;Script de Pruebas N°2
 
 ;(define op1 (option  1 "1) Viajar" 2 1 "viajar" "turistear" "conocer"))
-(define op1 (op 1 1 1 "viajar"))
+(define op1(op 1 1 1 "viajar"))
 ;(define op2 (option  2 "2) Estudiar" 3 1 "estudiar" "aprender" "perfeccionarme"))
-(define op2 (op 2 2 1 "estudiar"))
+(define op2(op 2 2 1 "estudiar"))
 
 ;(define f10 (flow 1 "Flujo Principal Chatbot 1\nBienvenido\n¿Qué te gustaría hacer?" op1 op2 op2 op2 op2 op1)) 
 (define f10(flow "Flujo principal Chatbot Bienvenido ¿Que te gustaria hacer?" op1 op2 op2 op2 op1)) ;solo añade una ocurrencia de op2
 ;(define f11 (flow-add-option f10 op1)) ;se intenta añadir opción duplicada            
 (define f11(flow-add-option f10 op1)) ;se intenta añadir opción duplicada
 ;(define cb0 (chatbot 0 "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10))  ;solo añade una ocurrencia de f10
-(define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10 f10))
+(define cb0(chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10 f10))
 
 ;Chatbot1
 ;(define op3 (option 1 "1) New York, USA" 1 2 "USA" "Estados Unidos" "New York"))
-(define op3 (op 5 1 2 "new york" ))
+(define op3(op 5 1 2 "new york" ))
 ;(define op4 (option 2 "2) París, Francia" 1 1 "Paris" "Eiffel"))
-(define op4 (op 7 1 1 "paris" ))
+(define op4(op 7 1 1 "paris" ))
 ;(define op5 (option 3 "3) Torres del Paine, Chile" 1 1 "Chile" "Torres" "Paine" "Torres Paine" "Torres del Paine"))
-(define op5 (op 6 1 1 "torres del paine" ))
+(define op5(op 6 1 1 "torres del paine" ))
 ;(define op6 (option 4 "4) Volver" 0 1 "Regresar" "Salir" "Volver"))
-(define op6 (op 8 0 1 "volver" ))
+(define op6(op 8 0 1 "volver" ))
 
 ;Opciones segundo flujo Chatbot1
 ;(define op7 (option 1 "1) Central Park" 1 2 "Central" "Park" "Central Park"))
-(define op7 (op 20 1 2 "central park" ))
+(define op7(op 20 1 2 "central park" ))
 ;(define op8 (option 2 "2) Museos" 1 2 "Museo"))
-(define op8 (op 10 1 2 "museos" ))
+(define op8(op 10 1 2 "museos" ))
 ;(define op9 (option 3 "3) Ningún otro atractivo" 1 3 "Museo"))
 (define op9 (op 11 1 3 "ningun otro atractivo"))
 ;(define op10 (option 4 "4) Cambiar destino" 1 1 "Cambiar" "Volver" "Salir"))
-(define op10 (op 16 1 1 "cambiar destino" ))
+(define op10(op 16 1 1 "cambiar destino" ))
 ;(define op11 (option 1 "1) Solo" 1 3 "Solo"))
-(define op11 (op 9 1 3 "solo" ))
+(define op11(op 9 1 3 "solo" ))
 ;(define op12 (option 2 "2) En pareja" 1 3 "Pareja"))
-(define op12 (op 12 1 3 "en pareja" ))
+(define op12(op 12 1 3 "en pareja" ))
 ;(define op13 (option 3 "3) En familia" 1 3 "Familia"))
-(define op13 (op 13 1 3 "en familia" ))
+(define op13(op 13 1 3 "en familia" ))
 ;(define op14 (option 4 "4) Agregar más atractivos" 1 2 "Volver" "Atractivos"))
-(define op14 (op 15 1 2 "agregar mas atractivos" ))
+(define op14(op 15 1 2 "agregar mas atractivos" ))
 ;(define op15 (option 5 "5) En realidad quiero otro destino" 1 1 "Cambiar destino"))
-(define op15 (op 14 1 1 "en realidad quiero otro destino" ))
+(define op15(op 14 1 1 "en realidad quiero otro destino" ))
 
 ;(define f20 (flow 1 "Flujo 1 Chatbot1\n¿Dónde te Gustaría ir?" op3 op4 op5 op6))
 (define f20(flow "Flujo 1 Chatbot1\n¿Dónde te Gustaría ir?" op3 op4 op5 op6))
@@ -57,15 +60,15 @@
 ;(define f22 (flow 3 "Flujo 3 Chatbot1\n¿Vas solo o acompañado?" op11 op12 op13 op14 op15))
 (define f22(flow "Flujo 3 Chatbot1\n¿Vas solo o acompañado?" op11 op12 op13 op14 op15))
 ;(define cb1 (chatbot 1 "Agencia Viajes"  "Bienvenido\n¿Dónde quieres viajar?" 1 f20 f21 f22))
-(define cb1 (chatbot "Agencia Viajes"  "Bienvenido\n¿Dónde quieres viajar?" 1 f22 f21 f20))
+(define cb1(chatbot "Agencia Viajes"  "Bienvenido\n¿Dónde quieres viajar?" 1 f22 f21 f20))
 
 ;Chatbot2
 ;(define op16 (option 1 "1) Carrera Técnica" 2 1 "Técnica"))
-(define op16 (op 17 2 1 "carrera tecnica" ))
+(define op16(op 17 2 1 "carrera tecnica" ))
 ;(define op17 (option 2 "2) Postgrado" 2 1 "Doctorado" "Magister" "Postgrado"))
-(define op17 (op 18 2 1 "postgrado" ))
+(define op17(op 18 2 1 "postgrado" ))
 ;(define op18 (option 3 "3) Volver" 0 1 "Volver" "Salir" "Regresar"))
-(define op18 (op 19 0 1 "volver" ))
+(define op18(op 19 0 1 "volver" ))
 
 
 ;(define f30 (flow 1 "Flujo 1 Chatbot2\n¿Qué te gustaría estudiar?" op16 op17 op18))
@@ -75,27 +78,27 @@
 
 ;Sistema
 ;(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0 cb1 cb2))
-(define s0 (system "Chatbots Paradigmas" 0 cb0 cb0 cb0 cb1 cb2 ))
+(define s0(system "Chatbots Paradigmas" 0 cb0 cb0 cb0 cb1 cb2 ))
 ;(define s1 (system-add-chatbot s0 cb0)) ;igual a s0
-(define s1 (system-add-chatbot s0 cb2 )) 
+(define s1(system-add-chatbot s0 cb2 )) 
 ;(define s2 (system-add-user s1 "user1"))
-(define s2 (system-add-user s1 "user1"))
+(define s2(system-add-user s1 "user1"))
 ;(define s3 (system-add-user s2 "user2"))
-(define s3 (system-add-user s2 "user2"))
+(define s3(system-add-user s2 "user2"))
 ;(define s4 (system-add-user s3 "user2"))
-(define s4 (system-add-user s3 "user2"))
+(define s4(system-add-user s3 "user2"))
 ;(define s5 (system-add-user s4 "user3"))
-(define s5 (system-add-user s4 "user3"))
+(define s5(system-add-user s4 "user3"))
 ;(define s6 (system-login s5 "user8"))
-(define s6 (system-login s5 "user1"))
+(define s6(system-login s5 "user1"))
 ;(define s7 (system-login s6 "user1"))
-(define s7 (system-login s6 "user1"))
+(define s7(system-login s6 "user1"))
 ;(define s8 (system-login s7 "user2"))
-(define s8 (system-login s7 "user2"))
+(define s8(system-login s7 "user2"))
 ;(define s9 (system-logout s8))
-(define s9 (system-logout s8 "user2"))
+(define s9(system-logout s8 "user2"))
 ;(define s10 (system-login s9 "user2"))
-(define s10 (system-login s9 "user2"))
+(define s10(system-login s9 "user2"))
 
 
 (define s11(system-talk-rec s10 "viajar"))

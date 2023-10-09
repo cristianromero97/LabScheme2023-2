@@ -28,7 +28,7 @@
         '()
         (cons (car opciones) (seleccionar-opciones (- cantidad 1) (cdr opciones)))))
 
-  (let ((opciones-seleccionadas (seleccionar-opciones cantidad opciones-disponibles)))
+ (let ((opciones-seleccionadas (seleccionar-opciones cantidad opciones-disponibles)))
     (cons tipo opciones-seleccionadas)))
 
 ;pertenencia

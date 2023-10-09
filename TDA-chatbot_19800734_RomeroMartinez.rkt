@@ -30,7 +30,7 @@
 
 
 
-;Ejemplo de uso chatbot
+;Ejemplo de uso chatbo
 (define cb10(chatbot "Asistente"  "Bienvenido ¿Qué te gustaría hacer?"   f12))
 ;Ejemplo scrips de pruebas
 (define cb0 (chatbot "Inicial" "Bienvenido\n¿Qué te gustaría hacer?" 1 f10 f10 f10 f10 f10))

@@ -16,10 +16,10 @@
       '()))
 
 ;Ejemplo de uso system-add-user
-(define s6 (system-add-user s121 "user1"))
-(define s7 (system-add-user s6 "user2"))
-(define s8 (system-add-user s7 "user2")) ;solo añade un ocurrencia de user2
-(define s9 (system-add-user s8 "user3"))
+(define s65 (system-add-user s121 "user1"))
+(define s75 (system-add-user s65 "user2"))
+(define s85 (system-add-user s75 "user2")) ;solo añade un ocurrencia de user2
+(define s95 (system-add-user s85 "user3"))
 
 ;ejemplos scrpis de pruebas
 (define s2 (system-add-user s1 "user1"))

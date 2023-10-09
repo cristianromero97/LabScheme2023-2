@@ -33,7 +33,7 @@
             (find-user-flow (cdr sistema) usuario)))))
 
 ; Ejemplo de uso system-synthesis
-(define s9 (system-add-user s8 "user0"))
-(define s10 (system-add-chatbot s9 cb11))
-(define s11 (system-synthesis s10 "user0"))
+(define s955 (system-add-user s85 "user0"))
+(define s105 (system-add-chatbot s955 cb11))
+(define s115 (system-synthesis s105 "user0"))
 

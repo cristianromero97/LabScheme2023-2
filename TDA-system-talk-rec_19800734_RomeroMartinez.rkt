@@ -46,4 +46,4 @@
         )))
 
 ;Ejemplo de uso system-talk-rec
-(define s6 (system-talk-rec s8 "estudiar"))
+(define s62 (system-talk-rec s85 "estudiar"))
